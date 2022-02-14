@@ -1,4 +1,8 @@
+const arenas = document.getElementsByClassName('arenas')[0];
+const randomBtn = document.getElementsByClassName('button')[0];
+
 const scorp = {
+    player: 1,
     name: 'Scorpion',
     hp: 100,
     img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -9,8 +13,9 @@ const scorp = {
 };
 
 const kitana = {
+    player: 2,
     name: 'Kitana',
-    hp: 80,
+    hp: 100,
     img: 'http://reactmarathon-api.herokuapp.com/assets/kitana.gif',
     weapon: 'Веер',
     attack: function(){
@@ -18,65 +23,62 @@ const kitana = {
     }
 };
 
-const arenas = document.getElementsByClassName('arenas')[0];
-// ---------------------------------- TASK#2 ----------------------------------------------
-// function createPlayer(playerClass, playerName, hp){
-//     let player = document.createElement('div');
-//     player.classList.add(playerClass);
 
-//     let progressbar = document.createElement('div');
-//     progressbar.classList.add('progressbar');
-//     let life = document.createElement('div');
-//     life.classList.add('life');
-//     life.style.width = '100%';
-//     life.innerText = hp
-//     let name = document.createElement('div');
-//     name.classList.add('name');
-//     name.innerText = playerName;
-//     progressbar.appendChild(life);
-//     progressbar.appendChild(name);
+function createElement(tag, tagClass){
+    let el = document.createElement(tag);
+    if(tagClass){
+        el.classList.add(tagClass);
+    }
 
-//     let character = document.createElement('div');
-//     character.classList.add('character');
-//     let img = document.createElement('img');
-//     img.src = 'http://reactmarathon-api.herokuapp.com/assets/liukang.gif';
-//     character.appendChild(img);
+    return el
+}
 
-//     player.appendChild(progressbar);
-//     player.appendChild(character);
+function createPlayer(playerObj){
+    let player = createElement('div', 'player' + playerObj.player);
 
-//     arenas.appendChild(player);
-// }
-// createPlayer('player1', 'liukang', 80);
-
-
-// ---------------------------------- TASK#3 ----------------------------------------------
-function createPlayer(playerClass, playerObj){
-    let player = document.createElement('div');
-    player.classList.add(playerClass);
-
-    let progressbar = document.createElement('div');
-    progressbar.classList.add('progressbar');
-    let life = document.createElement('div');
-    life.classList.add('life');
-    life.style.width = '100%';
-    life.innerText = playerObj.hp
-    let name = document.createElement('div');
-    name.classList.add('name');
+    let progressbar = createElement('div', 'progressbar');
+    let life = createElement('div', 'life');
+    life.style.width = playerObj.hp + '%';
+    let name = createElement('div', 'name');
     name.innerText = playerObj.name;
     progressbar.appendChild(life);
     progressbar.appendChild(name);
 
-    let character = document.createElement('div');
-    character.classList.add('character');
-    let img = document.createElement('img');
+    let character = createElement('div', 'character');
+    let img = createElement('img');
     img.src = playerObj.img;
     character.appendChild(img);
 
     player.appendChild(progressbar);
     player.appendChild(character);
 
-    arenas.appendChild(player);
+    return player;
 }
-createPlayer('player1', scorp);
-createPlayer('player2', kitana);
+arenas.appendChild(createPlayer(scorp));
+arenas.appendChild(createPlayer(kitana));
+
+function changeHp(player){
+    const playerLife = document.querySelector('.player' + player.player + ' .life');
+    player.hp -= Math.floor(Math.random()*(20 - 1) + 1);
+    playerLife.style.width = player.hp + '%';
+}
+
+function playerWins(name){
+    const loseTitle = createElement('div', 'loseTitle');
+    loseTitle.innerText = name + ' wins';
+    randomBtn.disabled = true;
+    return loseTitle;
+}
+
+randomBtn.addEventListener('click', ()=>{
+    console.log('click');
+    changeHp(scorp);
+    changeHp(kitana);
+    if(scorp.hp <= 0){
+        kitana.hp = 0;
+        arenas.appendChild(playerWins(kitana.name));
+    }else if(kitana.hp <= 0){
+        scorp.hp = 0;
+        arenas.appendChild(playerWins(scorp.name));
+    }
+});
