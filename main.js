@@ -1,6 +1,24 @@
 const arenas = document.getElementsByClassName('arenas')[0];
 const randomBtn = document.getElementsByClassName('button')[0];
 
+const form = document.querySelector('.control');
+const HIT = {
+    head: 30,
+    body: 25,
+    foot: 20,
+    }
+const ATTACK = ['head', 'body', 'foot'];
+
+function enemyAttack(){
+    const hit = ATTACK[getRandom(3) - 1];
+    const defence = ATTACK[getRandom(3) - 1];
+    return {
+        value: getRandom(HIT[hit]),
+        hit,
+        defence,
+    }
+}
+
 function changeHp(hp){
     if(this.hp - hp > 0){
        this.hp -= hp;
@@ -45,7 +63,6 @@ const kitana = {
     renderHp
 };
 
-
 function createElement(tag, tagClass){
     let el = document.createElement(tag);
     if(tagClass){
@@ -79,7 +96,6 @@ function createPlayer(playerObj){
 arenas.appendChild(createPlayer(scorp));
 arenas.appendChild(createPlayer(kitana));
 
-
 function playerWins(name){
     const loseTitle = createElement('div', 'loseTitle');
     
@@ -106,16 +122,36 @@ function createReloadButton(){
     arenas.appendChild(reloadWrap);
 }
 
-function ranHp(){
-    return Math.floor(Math.random()*20);
+function getRandom(range){
+    return Math.ceil(Math.random()*range);
 }
 
-randomBtn.addEventListener('click', ()=>{
-    console.log('click');
-    scorp.changeHp(ranHp());
-    kitana.changeHp(ranHp());
-    scorp.renderHp(scorp.elHp());
-    kitana.renderHp(kitana.elHp());
+form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const enemy = enemyAttack();
+    const attack = {};
+
+    for (const item of form) {
+        if(item.checked && item.name === 'hit'){
+            attack.value = getRandom(HIT[item.value]);
+            attack.hit = item.value;
+        }
+
+        if(item.checked && item.name === 'defence'){
+            attack.defence = item.value;
+        }
+
+        item.checked = false;
+    }
+
+    if(enemy.hit !== attack.defence){
+        scorp.changeHp(enemy.value);
+        scorp.renderHp(scorp.elHp());
+    }
+    if(attack.hit !== enemy.defence){
+        kitana.changeHp(attack.value);
+        kitana.renderHp(kitana.elHp());
+    }
 
     if(scorp.hp <= 0){
         kitana.hp = 0;
