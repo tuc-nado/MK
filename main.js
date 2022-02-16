@@ -1,6 +1,22 @@
 const arenas = document.getElementsByClassName('arenas')[0];
 const randomBtn = document.getElementsByClassName('button')[0];
 
+function changeHp(hp){
+    if(this.hp - hp > 0){
+       this.hp -= hp;
+    } else{
+        this.hp = 0;
+    }
+}
+
+function elHp(){
+    return document.querySelector('.player' + this.player + ' .life');
+}
+
+function renderHp(playerLife){
+    playerLife.style.width = this.hp + '%';
+}
+
 const scorp = {
     player: 1,
     name: 'Scorpion',
@@ -9,7 +25,10 @@ const scorp = {
     weapon: 'Кунай',
     attack: function(){
         console.log(this.name + ' fight');
-    }
+    },
+    changeHp,
+    elHp,
+    renderHp
 };
 
 const kitana = {
@@ -20,7 +39,10 @@ const kitana = {
     weapon: 'Веер',
     attack: function(){
         console.log(this.name + ' fight');
-    }
+    },
+    changeHp,
+    elHp,
+    renderHp
 };
 
 
@@ -57,28 +79,51 @@ function createPlayer(playerObj){
 arenas.appendChild(createPlayer(scorp));
 arenas.appendChild(createPlayer(kitana));
 
-function changeHp(player){
-    const playerLife = document.querySelector('.player' + player.player + ' .life');
-    player.hp -= Math.floor(Math.random()*(20 - 1) + 1);
-    playerLife.style.width = player.hp + '%';
-}
 
 function playerWins(name){
     const loseTitle = createElement('div', 'loseTitle');
-    loseTitle.innerText = name + ' wins';
+    
+    if(name){
+        loseTitle.innerText = name + ' wins';
+    }else {
+        loseTitle.innerText = 'draw';
+    }
     randomBtn.disabled = true;
+    createReloadButton();
     return loseTitle;
+}
+
+function createReloadButton(){
+    let reloadWrap = createElement('div', 'reloadWrap');
+    let btn = createElement('button', 'button');
+    btn.innerText = 'Restart';
+    reloadWrap.appendChild(btn);
+
+    btn.addEventListener('click', ()=>{
+        window.location.reload();
+    });
+
+    arenas.appendChild(reloadWrap);
+}
+
+function ranHp(){
+    return Math.floor(Math.random()*20);
 }
 
 randomBtn.addEventListener('click', ()=>{
     console.log('click');
-    changeHp(scorp);
-    changeHp(kitana);
+    scorp.changeHp(ranHp());
+    kitana.changeHp(ranHp());
+    scorp.renderHp(scorp.elHp());
+    kitana.renderHp(kitana.elHp());
+
     if(scorp.hp <= 0){
         kitana.hp = 0;
         arenas.appendChild(playerWins(kitana.name));
     }else if(kitana.hp <= 0){
         scorp.hp = 0;
         arenas.appendChild(playerWins(scorp.name));
+    } else if(scorp.hp === 0 && kitana === 0) {
+        arenas.appendChild(playerWins());
     }
 });
