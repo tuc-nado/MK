@@ -56,7 +56,7 @@ function createReloadButton(){
     reloadWrap.appendChild(btn);
 
     btn.addEventListener('click', ()=>{
-        window.location.reload();
+        window.location.pathname = 'index.html';
     });
 
     arenas.appendChild(reloadWrap);
