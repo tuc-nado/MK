@@ -1,5 +1,5 @@
 import { createElement,getRandom } from './helpsFunc.js';
-import { LOGS } from './main.js';
+import { LOGS } from './consts.js';
 
 export const arenas = document.getElementsByClassName('arenas')[0];
 const randomBtn = document.getElementsByClassName('button')[0];
@@ -77,21 +77,41 @@ export function showResult(player1, player2){
     }
 }
 
-export function generateLogs(logs, type, { name: name1 }, { name: name2 }){
-    let text;
+function getTime(){
+    const date = new Date();
+    return `${date.getHours()}:${date.getMinutes()}`;
+}
+
+function getTextLog(logs, type, name1, name2){
     switch (type) {
         case 'start':
-            text = logs[type].replace('[player1]', name1).replace('[player2]', name2).replace('[time]', `${new Date().getHours()}:${new Date().getMinutes()}`);
+            return logs[type].replace('[player1]', name1).replace('[player2]', name2).replace('[time]', getTime());
             break;
         case 'end':
-            text = logs[type][getRandom(3) - 1].replace('[playerWins]', name1).replace('[playerLose]', name2);
+            return logs[type][getRandom(3) - 1].replace('[playerWins]', name1).replace('[playerLose]', name2);
             break;
         case 'hit':
-            text = logs[type][getRandom(18) - 1].replace('[playerKick]', name1).replace('[playerDefence]', name2);
+            return logs[type][getRandom(18) - 1].replace('[playerKick]', name1).replace('[playerDefence]', name2);
             break;
         case 'defence':
-            text = logs[type][getRandom(8) - 1].replace('[playerKick]', name1).replace('[playerDefence]', name2);
+            return logs[type][getRandom(8) - 1].replace('[playerKick]', name1).replace('[playerDefence]', name2);
             break;
+    }
+}
+
+export function generateLogs(logs, type, player1, player2, valueAttack){
+    let text = getTextLog(logs, type, player1.name, player2.name);
+    switch (type) {
+        case 'hit':
+            text = `${getTime()} ${text} -${valueAttack} [${player2.hp}]/100`;
+            break;
+        case 'defence':
+        case 'end':
+        case 'draw':
+            text = `${getTime()} ${text}`;
+            break
+    }
+    if(type === 'hit'){
     }
     const el = `<p>${text}</p>`;
     chat.insertAdjacentHTML('afterbegin', el)

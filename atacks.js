@@ -1,12 +1,8 @@
 import { getRandom } from './helpsFunc.js';
+import { HIT, ATTACK } from './consts.js';
 export const form = document.querySelector('.control');
 
-const HIT = {
-    head: 30,
-    body: 25,
-    foot: 20,
-}
-const ATTACK = ['head', 'body', 'foot'];
+
 
 /**
 * @returns {Object}
@@ -40,30 +36,4 @@ export function playerAttack(){
     }
 
     return attack;
-}
-
-/**
-* 
-* @param {Number} hp 
-*/
-export function changeHp(hp){
-    if(this.hp - hp > 0){
-       this.hp -= hp;
-    } else{
-        this.hp = 0;
-    }
-}
-
-/**
-* @returns {HTMLElement}
-*/
-export function elHp(){
-    return document.querySelector('.player' + this.player + ' .life');
-}
-
-/**
-* @param {HTMLElement} playerLife 
-*/
-export function renderHp(playerLife){
-    playerLife.style.width = this.hp + '%';
 }
